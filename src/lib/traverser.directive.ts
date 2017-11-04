@@ -3,18 +3,18 @@ import {
   ComponentRef,
   Directive,
   OnInit,
-  ReflectiveInjector,
+  OnDestroy,
   ViewContainerRef,
 } from '@angular/core';
 import { Location } from '@angular/common';
 import { Traverser } from './traverser';
+import { Target } from './interfaces';
 
 @Directive({
   selector: 'traverser-outlet',
 })
-export class TraverserOutlet implements OnInit {
-  private ref: ComponentRef<any>;
-  private viewInstance:any;
+export class TraverserOutlet implements OnInit, OnDestroy {
+  private viewInstance: any;
 
   constructor(
     private traverser: Traverser,
@@ -24,25 +24,25 @@ export class TraverserOutlet implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.traverser.target.subscribe(target => this.render(target));
+    this.traverser.target.subscribe((target: Target) => this.render(target));
     this.traverser.traverse(this.location.path());
     this.location.subscribe(location => {
-      this.traverser.traverse(location.url, false);
+      this.traverser.traverse(String(location.url), false);
     });
   }
 
   ngOnDestroy() {
-    if(this.viewInstance) {
+    if (this.viewInstance) {
       this.viewInstance.destroy();
     }
   }
 
-  render(target) {
-    if(this.viewInstance) {
+  render(target: Target) {
+    if (this.viewInstance) {
       this.viewInstance.destroy();
     }
-    if(target.component) {
-      let componentFactory = this.resolver.resolveComponentFactory(
+    if (target.component) {
+      const componentFactory = this.resolver.resolveComponentFactory(
         target.component);
       this.viewInstance = this.container.createComponent(componentFactory);
     }

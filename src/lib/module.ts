@@ -1,18 +1,19 @@
 import { NgModule } from '@angular/core';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { TraverserOutlet } from './traverser.directive';
-import { TraverserLink } from './traverser.link';
+import { TraverserLink, TraverserButton } from './traverser.link';
 import { Traverser } from './traverser';
 
 @NgModule({
   declarations: [
     TraverserOutlet,
+    TraverserButton,
     TraverserLink,
   ],
   imports: [
-    HttpModule,
+    HttpClientModule,
   ],
   providers: [
     Location,
@@ -21,6 +22,7 @@ import { Traverser } from './traverser';
   ],
   exports: [
     TraverserOutlet,
+    TraverserButton,
     TraverserLink,
   ]
 })

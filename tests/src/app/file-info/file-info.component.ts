@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Traverser } from '../../../dist';
+import { Traverser } from 'angular-traversal';
 
 @Component({
   selector: 'app-file-info',
@@ -8,7 +8,7 @@ import { Traverser } from '../../../dist';
 })
 export class FileInfoComponent implements OnInit {
 
-  private context: any;
+  public context: any;
 
   constructor(private traverser: Traverser) { }
 

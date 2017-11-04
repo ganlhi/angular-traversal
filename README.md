@@ -2,6 +2,8 @@
 
 **When routing is not good enough**
 
+[![Build Status](https://travis-ci.org/makinacorpus/angular-traversal.svg?branch=master)](https://travis-ci.org/makinacorpus/angular-traversal)
+
 ## Demo
 
 In this [demo](https://makinacorpus.github.io/angular-traversal/demo/) we allow to navigate in any public Github repository. There is not specific routing implemented in the app, we just rely on the Github routing itself.
@@ -90,6 +92,8 @@ In many cases, we will retrieve this context from a backend, so Angular Traversa
 
 The traverser will give this context object to the view component so it can be rendered.
 
+If we traverse to a view without context (like ``@@login``), we will not re-call the resolver, we will just keep the current context and change the view.
+
 ### How the traverser knows which component to use?
 
 As mentionned earlier, the view mapping is based on a *context marker* (in our example, we have `'Document'` and `'Folder'`). It is a string computed from the context object using a custom *marker* class.
@@ -101,6 +105,9 @@ return context.type
 ```
 
 And `'*'` allows to match any context.
+
+Note: if our marker returns an array of strings, the traverser will pick the first
+item of the array which matches a view definition.
 
 ## Usage
 
@@ -250,6 +257,63 @@ import { TypeMarker } from './type-marker';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+```
+
+## Path normalizer
+
+The main use case is to call a REST backend based on the current path.
+For instance, by calling http://localhost:4200/makinacorpus/angular-traversal/contents
+the traverser will call https://api.github.com/repos/makinacorpus/angular-traversal/contents
+and use the result as the view context.
+
+But, if the result contains some path to other resources, in most cases they will be
+provided as full URL, like in our case with the GitHub API, the folder items are like that:
+
+```javascript
+{
+    "name": "CHANGELOG.md",
+    ...
+    "url": "https://api.github.com/repos/makinacorpus/angular-traversal/contents/CHANGELOG.md?ref=master",
+    ...
+}
+```
+
+So if we want to use this url to create a traversable link, we need to shorten it:
+
+```html
+<a traverseTo="/makinacorpus/angular-traversal/contents/CHANGELOG.md?ref=master">CHANGELOG.md</a>
+```
+
+Of course, our resolver could support full pathes, but then the displayed location in the browser
+would be:
+
+```http://localhost:4200/https://api.github.com/repos/makinacorpus/angular-traversal/contents/CHANGELOG.md?ref=master```
+
+which does work, but is pretty ugly.
+
+To avoid that, we can implement a Normalizer:
+```javascript
+import { Injectable } from '@angular/core';
+import { Normalizer } from 'angular-traversal';
+
+@Injectable()
+export class FullPathNormalizer extends Normalizer {
+  normalize(path): string {
+    if (path.startsWith('https://api.github.com/repos')) {
+      return path.slice(28);
+    } else {
+      return path;
+    }
+  }
+}
+```
+and provide it in the module:
+```javascript
+import { Normalizer } from 'angular-traversal';
+import { FullPathNormalizer } from './my-normalizer';
+...
+  { provide: Normalizer, useClass: FullPathNormalizer },
+...
 ```
 
 ## Other demo package

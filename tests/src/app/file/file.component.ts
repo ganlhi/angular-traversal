@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Traverser } from '../../../dist';
+import { Traverser } from 'angular-traversal';
 
 @Component({
   selector: 'app-file',
@@ -8,15 +8,15 @@ import { Traverser } from '../../../dist';
 })
 export class FileComponent implements OnInit {
 
-  private name: string;
-  private code: string;
-  private path: string;
+  public name: string;
+  public code: string;
+  public path: string;
 
   constructor(private traverser: Traverser) { }
 
   ngOnInit() {
     this.traverser.target.subscribe(target => {
-      let context = target.context;
+      const context = target.context;
       this.name = context.name;
       this.code = atob(context.content);
       this.path = target.path.split('?')[0];

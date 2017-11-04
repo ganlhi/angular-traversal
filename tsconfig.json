@@ -5,7 +5,9 @@
         "module": "es2015",
         "moduleResolution": "node",
         "declaration": true,
-        "noImplicitAny": false,
+        "allowUnusedLabels": false,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
         "strictNullChecks": true,
         "sourceMap": false,
         "emitDecoratorMetadata": true,
@@ -23,7 +25,6 @@
             "es2015"
         ],
         "paths": {
-            "@angular/http": ["node_modules/@angular/http"],
             "rxjs/*": ["node_modules/rxjs/*"]
         }
     },
@@ -34,11 +35,12 @@
         "dist",
         "tests",
         "**/*.ngfactory.ts",
+        "**/*.spec.ts",
         "**/*.shim.ts"
     ],
     "angularCompilerOptions": {
         "genDir": "dist",
-        "entryModule": "src/lib/app.module#AppModule",
+        "entryModule": "src/lib/module#TraversalModule",
         "skipTemplateCodegen": true,
         "strictMetadataEmit": true
     }
